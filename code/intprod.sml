@@ -339,9 +339,38 @@ fun solve1 n d =
     help d
   end
 
+(* Find codes in A \ B *)
+(* codedifference : int -> code list -> code list -> code list *)
+(* Naive method: For each element in A, delete if it's in B *)
+fun codedifference n A B =
+  List.filter 
+  (fn c1 => not (List.exists
+    (fn c2 => checkIso n (c1, c2)) B)) A
 
 
 
+
+(* Convert from string to code list *)
+fun stringToCode () =
+let
+  val sl = Input.getLines "data2.txt"
+  
+  fun charListToIntList cs = map (fn c => Char.ord c - 48) cs
+
+  (* parseLine : string -> code *)
+  fun parseLine s =
+    String.explode s
+    |> List.filter (fn x => x <> #" ")
+    |> Input.split (fn x => x = #",")
+    |> map charListToIntList
+    |> List.filter (fn x => x <> [178,88,85])
+    (* 178,88,85 is the ASCII for the empty set symbol *)
+in
+  map parseLine sl
+end
+
+
+(* Printing zone *)
 
 fun codewordToString cw = List.foldr (fn (i, s) => Int.toString i ^ s) "" cw
 
@@ -358,6 +387,12 @@ fun printCodes cs =
   in
     map (printCode o codeToString) cs
   end
+
+fun isDigit c = 48 <= Char.ord c andalso Char.ord c <= 57
+fun zeroIndexToOneIndex s =
+     String.explode s
+  |> map (fn c => if isDigit c then Char.chr (Char.ord c + 1)
+                  else c) 
 
 
 (* Known bugs / todos *)
